@@ -17,9 +17,9 @@ if __name__ == "__main__":
 
     # connect client to OSC server
     c = OSC.OSCClient()
-    #c.connect(('127.0.0.1', 7110))
-    # different ip
-    c.connect(('169.254.178.186', 7110))
+    c.connect(('127.0.0.1', 7110))
+    # different ip for PC
+    #c.connect(('169.254.178.186', 7110))
 
     # OSC messages
     switch_msg = OSC.OSCMessage()

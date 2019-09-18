@@ -1,0 +1,34 @@
+#N canvas 258 249 615 707 10;
+#X text 19 10 start this patch in the shell like this:;
+#X text 18 29 pd acc-log_osc.pd -send "/num_of_files <number_of_log-files_in_dir>"
+;
+#X obj 412 534 netsend -u -b;
+#X floatatom 412 565 5 0 0 0 - - -;
+#X obj 158 442 list prepend send;
+#X obj 158 467 list trim;
+#X text 157 599 WARNING: Pd sometimes writes trailing white space in
+the file \, after last number in some lines before the semicolon. Make
+shure to get rid of these spaces before analyzing the data. Tipp: search
+for "'space' \; ";
+#X obj 163 164 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 163 187 metro 500;
+#X obj 163 210 random 1000;
+#X floatatom 105 261 5 0 0 0 - - -;
+#X obj 158 416 oscformat rand;
+#X obj 99 526 print;
+#X msg 408 310 connect 169.254.203.219 7110;
+#X obj 99 494 oscparse;
+#X msg 414 330 connect 127.0.0.1 7110;
+#X connect 2 0 3 0;
+#X connect 4 0 5 0;
+#X connect 5 0 2 0;
+#X connect 7 0 8 0;
+#X connect 8 0 9 0;
+#X connect 9 0 10 0;
+#X connect 9 0 11 0;
+#X connect 11 0 4 0;
+#X connect 11 0 14 0;
+#X connect 13 0 2 0;
+#X connect 14 0 12 0;
+#X connect 15 0 2 0;

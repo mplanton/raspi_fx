@@ -35,6 +35,7 @@ if __name__ == "__main__":
     # call handler() for OSC messages received with the '/startup' address
     s.addMsgHandler('/rotary/encoder', handler)
     s.addMsgHandler('/rotary/switch', handler)
+    s.addMsgHandler('/rand', handler)
 
     print("OSC Server listening...")
     s.serve_forever()
