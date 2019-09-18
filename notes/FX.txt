@@ -1,0 +1,22 @@
+Dragonfly Hall Reverb
+
+Zita Rev1
+
+IR: LV2 Convolution Reverb
+
+EQ10Q
+
+EBU R128 Meter (by Robin Gareus)
+
+
+Für RPi FX:
+
+- Gutes Delay mit Chorus, Vibrato, pitch shift, usw.
+
+- Physical Modeling Plate Reverb mit Waveguide Platte von Ritsch
+
+- (Waveguide) Resonator Effekt
+
+- Flanger
+
+- Phaser

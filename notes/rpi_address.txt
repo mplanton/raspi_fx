@@ -1,0 +1,5 @@
+ssh pi@169.254.203.219
+
+
+start pd with X forwarding:
+ssh -X pi@169.254.203.219
