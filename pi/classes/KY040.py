@@ -3,8 +3,8 @@ KY040 Python Class
 Martin O'Hanlon
 stuffaboutcode.com
 
-
 Additional code added by Conrad Storz 2015 and 2016
+Converted to python3 by Manuel Planton 2019
 """
 
 import RPi.GPIO as GPIO
@@ -37,7 +37,7 @@ class KY040:
     def stop(self):
         GPIO.remove_event_detect(self.clockPin)
         GPIO.remove_event_detect(self.switchPin)
-    
+
     def _clockCallback(self, pin):
         if GPIO.input(self.clockPin) == 0:
             self.rotaryCallback(GPIO.input(self.dataPin))
@@ -47,7 +47,7 @@ class KY040:
                 self.rotaryCallback(self.ANTICLOCKWISE)
             else:
                 self.rotaryCallback(self.CLOCKWISE)
-        
+
         self.rotaryCallback(GPIO.input(self.dataPin))
         """
 
@@ -61,31 +61,31 @@ class KY040:
 #test
 if __name__ == "__main__":
 
-    print 'Program start.'
+    print('Program start.')
 
-    CLOCKPIN = 17
-    DATAPIN = 18
-    SWITCHPIN = 27
+    CLOCKPIN = 26
+    DATAPIN = 20
+    SWITCHPIN = 21
 
     def rotaryChange(direction):
-        print "turned - " + str(direction)
+        print("turned - ", str(direction))
     def switchPressed(pin):
-        print "button connected to pin:{} pressed".format(pin)
+        print("button connected to pin:{} pressed".format(pin))
 
     GPIO.setmode(GPIO.BCM)
     ky040 = KY040(CLOCKPIN, DATAPIN, SWITCHPIN, rotaryChange, switchPressed)
 
-    print 'Launch switch monitor class.'
+    print('Launch switch monitor class.')
 
     ky040.start()
-    print 'Start program loop...'
+    print('Start program loop...')
     try:
         while True:
             sleep(10)
-            print 'Ten seconds...'
+            print('Ten seconds...')
     finally:
-        print 'Stopping GPIO monitoring...'
+        print('Stopping GPIO monitoring...')
         ky040.stop()
         GPIO.cleanup()
-        print 'Program ended.'
+        print('Program ended.')
 
