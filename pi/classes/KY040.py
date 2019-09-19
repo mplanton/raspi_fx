@@ -15,7 +15,7 @@ class KY040:
 
     CLOCKWISE = 0
     ANTICLOCKWISE = 1
-    DEBOUNCE = 27 # change debaounce time for optimal debounce behavior
+    DEBOUNCE = 27 # change debounce time for optimal debounce behavior
 
     def __init__(self, clockPin, dataPin, switchPin, rotaryCallback, switchCallback):
         #persist values

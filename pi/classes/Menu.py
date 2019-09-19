@@ -55,21 +55,7 @@ class Menu:
     GPIO.setmode(GPIO.BCM)
 
     # callbacks for encoder must be defined first
-    def rotaryChange(direction):
-      """Callback function for turning the rotary encoder
-      Args:
-          direction: 0 - clockwise, 1 - counterclockwise
-      """
-      print("turned: ", str(direction))
-
-    def switchPressed(pin):
-      """Callback function for pressing the internal button of the rotary encoder
-      Args:
-          pin: BCM pin number of the button
-      """
-      print("rotary button pressed")
-
-    self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, rotaryChange, switchPressed)
+    self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, self.rotaryChange, self.switchPressed)
     print("initialize display")
     self.display = hd44780.HD44780(d_rs, d_e, d_d4, d_d5, d_d6, d_d7)
     print("initialize OSC Server")
@@ -77,6 +63,20 @@ class Menu:
     print("initialize OSC Client")
     self.client = OSC3.OSCClient()
     self.client.connect((pd_ip, pd_port))
+
+  def rotaryChange(self, direction):
+    """Callback function for turning the rotary encoder
+    Args:
+        direction: 0 - clockwise, 1 - counterclockwise
+    """
+    print("turned: ", str(direction))
+
+  def switchPressed(self, pin):
+    """Callback function for pressing the internal button of the rotary encoder
+    Args:
+        pin: BCM pin number of the button
+    """
+    print("rotary button pressed")
 
 
 
