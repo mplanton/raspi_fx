@@ -1,8 +1,9 @@
+from time import sleep
 import RPi.GPIO as GPIO
 from pyOSC3 import OSC3
 import hd44780
 import KY040
-#import Button
+import Button
 
 class Menu:
   """Menu class for managing a multi effects patch in Pd on Raspberry Pi.
@@ -29,7 +30,7 @@ class Menu:
   Manuel Planton 2019
   """
 
-  def __init__(self, ip, port, pd_ip, pd_port, d_rs, d_e, d_d4, d_d5, d_d6, d_d7, r_clk, r_d, r_sw):
+  def __init__(self, ip, port, pd_ip, pd_port, d_rs, d_e, d_d4, d_d5, d_d6, d_d7, r_clk, r_d, r_sw, button):
     """Constructor
     IP addresses and port numbers for OSC connection are needed.
     Prefix 'd' is for HD44780 compatible display connections connected to the pins of the RPi.
@@ -50,10 +51,12 @@ class Menu:
         r_clk: rotary encoder clock pin number
         r_d: rotary encoder data pin number
         r_sw: rotary encoder internal switch button pin number
+        button: push button pin number
     """
 
     GPIO.setmode(GPIO.BCM)
 
+    self.button = Button.Button(button, "falling", self.buttonPressed)
     # callbacks for encoder must be defined first
     self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, self.rotaryChange, self.switchPressed)
     print("initialize display")
@@ -63,6 +66,10 @@ class Menu:
     print("initialize OSC Client")
     self.client = OSC3.OSCClient()
     self.client.connect((pd_ip, pd_port))
+
+  def buttonPressed(self, pin):
+    """Callback function for the single push button"""
+    print("button pressed at pin " + str(pin))
 
   def rotaryChange(self, direction):
     """Callback function for turning the rotary encoder
@@ -83,10 +90,12 @@ class Menu:
   def run(self):
     print("running...")
     self.r_encoder.start()
+    self.button.start()
     self.server.serve_forever()
 
   def stop(self):
     self.r_encoder.stop()
+    self.button.stop()
     GPIO.cleanup()
 
 if __name__ == "__main__":
@@ -105,6 +114,12 @@ if __name__ == "__main__":
   R_CLK = 26
   R_D = 20
   R_SW = 21
+  # push button
+  B_PIN = 5
 
-  m = Menu(IP, PORT, IP, PD_PORT, D_RS, D_E, D_D4, D_D5, D_D6, D_D7, R_CLK, R_D, R_SW)
+  m = Menu(IP, PORT, IP, PD_PORT, D_RS, D_E, D_D4, D_D5, D_D6, D_D7, R_CLK, R_D, R_SW, B_PIN)
   m.run()
+  print("running...")
+  sleep(20)
+  m.stop()
+  print("program terminated")

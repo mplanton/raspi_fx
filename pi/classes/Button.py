@@ -39,8 +39,8 @@ class Button:
 if __name__ == "__main__":
   PIN = 5
   GPIO.setmode(GPIO.BCM)
-  def buttonPressed(channel):
-    print("button pressed at pin " + str(channel))
+  def buttonPressed(pin):
+    print("button pressed at pin " + str(pin))
 
   button = Button(PIN, "falling", buttonPressed)
   button.start()
