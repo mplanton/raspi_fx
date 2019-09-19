@@ -14,6 +14,7 @@ if __name__ == "__main__":
     CLOCKPIN = 26
     DATAPIN = 20
     SWITCHPIN = 21
+    BUTTON = 5
 
     # connect client to OSC server
     c = OSC.OSCClient()
