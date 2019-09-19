@@ -1,6 +1,8 @@
 TODO:
 =====
 
+- Werte mit reverb zwischen Pd und Menü oder ähnliches hin und her schicken
+
 - Menü level 3: Parameter einstellen implementieren
 
 - Menü Connect auf Antwort von Pd warten?

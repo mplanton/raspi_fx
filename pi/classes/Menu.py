@@ -74,8 +74,8 @@ class Menu:
     self.pos = [0]*(self.LEVEL_MAX + 1) # positions in the menu at every menu level
 
     # define effects
-    reverb = Effect("Reverb", {'dry' : 0.5, 'wet' : 0.9, 'input_level' : 90, 'output_level' : 1, 
-                               'liveness' : 90, 'fc' : 3000, 'hf_damping' : 20})
+    reverb = Effect("Reverb", {'dry' : 0.5, 'wet' : 0.9, 'rev_in_lvl' : 90,
+                               'liveness' : 90, 'fc' : 3000, 'hf_damp' : 20})
     delay = Effect("Delay", {'dry' : 0.5, 'wet' : 1, 'feedback' : 0.6})
     lop = Effect("Tiefpass", {'fc' : 1000})
     hip = Effect("Hochpass", {'fc' : 400})
