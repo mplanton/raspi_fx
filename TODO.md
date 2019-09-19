@@ -1,8 +1,6 @@
 TODO:
 =====
 
-- Menü level 2: parameter wählen implementieren
-
 - Menü level 3: Parameter einstellen implementieren
 
 - Menü Connect auf Antwort von Pd warten?

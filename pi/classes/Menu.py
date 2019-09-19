@@ -44,6 +44,7 @@ class Menu:
 
   LEVEL_MIN = 0
   LEVEL_MAX = 3
+  SUPERLINE = "#"*16
 
   def __init__(self, ip, port, pd_ip, pd_port, d_rs, d_e, d_d4, d_d5, d_d6, d_d7, r_clk, r_d, r_sw, button):
     """Constructor
@@ -128,9 +129,15 @@ class Menu:
       return
 
     if self.level == 1:
-      # choose effect
+      # effect selection
       new_pos = self.pos[self.level] + direction
       if new_pos >= 0 and new_pos <= len(self.fx) - 1:
+        self.pos[self.level] += direction
+        self.printMenu()
+    elif self.level == 2:
+      # parameter selection
+      new_pos = self.pos[self.level] + direction
+      if new_pos >= 0 and new_pos <= len(self.fx[self.pos[1]].params) - 1: # levels are hard coded...
         self.pos[self.level] += direction
         self.printMenu()
     else:
@@ -148,22 +155,39 @@ class Menu:
     if self.level == 0:
       self.display.message(self.display.LINE_1, "Menu lvl 0")
       self.display.message(self.display.LINE_2, "Metering: TBA")
+
     # effect selection
     elif self.level == 1:
       if self.pos[self.level] == len(self.pos) - 1: # last entry
-        self.display.message(self.display.LINE_1, "* " + self.fx[self.pos[self.level]].name)
-        self.display.message(self.display.LINE_2, "")
+        self.display.message(self.display.LINE_1, "*" + self.fx[self.pos[self.level]].name)
+        self.display.message(self.display.LINE_2, self.SUPERLINE)
       else:
-        self.display.message(self.display.LINE_1, "* " + self.fx[self.pos[self.level]].name)
+        self.display.message(self.display.LINE_1, "*" + self.fx[self.pos[self.level]].name)
         self.display.message(self.display.LINE_2, self.fx[self.pos[self.level] + 1].name)
+
     # parameter selection
     elif self.level == 2:
-      self.display.message(self.display.LINE_1, "Menu lvl 2")
-      self.display.message(self.display.LINE_2, "")
+      fx_lvl = self.pos[1] # menu levels are currently hard coded...
+      param_lvl = self.pos[self.level]
+      params = self.fx[fx_lvl].params
+      keys = list(params.keys())
+      key1 = keys[param_lvl]
+
+      # last entry
+      if param_lvl == len(self.fx[fx_lvl].params) - 1:
+        self.display.message(self.display.LINE_1, "*" + key1 + ": " + str(params[key1]))
+        self.display.message(self.display.LINE_2, self.SUPERLINE)
+
+      # and the lines between
+      else:
+        key2 = keys[param_lvl + 1]
+        self.display.message(self.display.LINE_1, "*" + key1 + ": " + str(params[key1]))
+        self.display.message(self.display.LINE_2, key2 + ": " + str(params[key2]))
+
     # parameter adjustment
     elif self.level == 3:
       self.display.message(self.display.LINE_1, "Menu lvl 3")
-      self.display.message(self.display.LINE_2, "")
+      self.display.message(self.display.LINE_2, self.SUPERLINE)
 
 
   def run(self):
