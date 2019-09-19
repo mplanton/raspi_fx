@@ -13,8 +13,8 @@ from time import sleep
 
 class KY040:
 
-    CLOCKWISE = 0
-    ANTICLOCKWISE = 1
+    CLOCKWISE = 1
+    ANTICLOCKWISE = -1
     DEBOUNCE = 27 # change debounce time for optimal debounce behavior
 
     def __init__(self, clockPin, dataPin, switchPin, rotaryCallback, switchCallback):
@@ -40,22 +40,14 @@ class KY040:
 
     def _clockCallback(self, pin):
         if GPIO.input(self.clockPin) == 0:
-            self.rotaryCallback(GPIO.input(self.dataPin))
-        """
             data = GPIO.input(self.dataPin)
             if data == 1:
                 self.rotaryCallback(self.ANTICLOCKWISE)
             else:
                 self.rotaryCallback(self.CLOCKWISE)
 
-        self.rotaryCallback(GPIO.input(self.dataPin))
-        """
 
     def _switchCallback(self, pin):
-        """
-        if GPIO.input(self.switchPin) == 0:
-            self.switchCallback()
-        """
         self.switchCallback()
 
 #test

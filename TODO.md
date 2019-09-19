@@ -1,7 +1,9 @@
 TODO:
 =====
 
-- Button Klasse wie KY040 schreiben (und entprellen)
+- Menü level 2: parameter wählen implementieren
+
+- Menü level 3: Parameter einstellen implementieren
 
 - Menü Connect auf Antwort von Pd warten?
 
@@ -11,4 +13,6 @@ TODO:
 
 - Alle OSC Verbindungen für Hall checken
 
-- Menü objektorientiert programmieren (für weitere Effekte erweiterbar)
+- Menü mit Pd Werten aktualisieren
+
+- Mnü Level 0: Metering implementieren

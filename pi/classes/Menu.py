@@ -5,6 +5,18 @@ import hd44780
 import KY040
 import Button
 
+class Effect:
+  """class to represent effects in the menu"""
+  def __init__(self, name, parameters):
+    """Constructor
+    Args:
+        name: name of the effect
+        parameters: a dictionary of parameter value pairs of the effect
+    """
+    self.on = 0
+    self.name = name
+    self.params = parameters
+
 class Menu:
   """Menu class for managing a multi effects patch in Pd on Raspberry Pi.
 
@@ -15,10 +27,10 @@ class Menu:
   the other button decreases the menu level.
 
   The menu levels are:
-   1. Level Metering
-   2. Effect Selection
-   3. Parameter Selection
-   4. Parameter Adjustment
+   0. Level Metering
+   1. Effect Selection
+   2. Parameter Selection
+   3. Parameter Adjustment
 
   The Menu is displayed on a HD44780 compatible 2x16 character display.
 
@@ -29,6 +41,9 @@ class Menu:
 
   Manuel Planton 2019
   """
+
+  LEVEL_MIN = 0
+  LEVEL_MAX = 3
 
   def __init__(self, ip, port, pd_ip, pd_port, d_rs, d_e, d_d4, d_d5, d_d6, d_d7, r_clk, r_d, r_sw, button):
     """Constructor
@@ -54,6 +69,18 @@ class Menu:
         button: push button pin number
     """
 
+    self.level = 1 # menu level entry state
+    self.pos = [0]*(self.LEVEL_MAX + 1) # positions in the menu at every menu level
+
+    # define effects
+    reverb = Effect("Reverb", {'dry' : 0.5, 'wet' : 0.9, 'input_level' : 90, 'output_level' : 1, 
+                               'liveness' : 90, 'fc' : 3000, 'hf_damping' : 20})
+    delay = Effect("Delay", {'dry' : 0.5, 'wet' : 1, 'feedback' : 0.6})
+    lop = Effect("Tiefpass", {'fc' : 1000})
+    hip = Effect("Hochpass", {'fc' : 400})
+    self.fx = [reverb, delay, lop, hip]
+    # TODO: append more fx later
+
     GPIO.setmode(GPIO.BCM)
 
     self.button = Button.Button(button, "falling", self.buttonPressed)
@@ -65,18 +92,18 @@ class Menu:
     self.server = OSC3.OSCServer((ip, port))
     print("initialize OSC Client")
     self.client = OSC3.OSCClient()
-    self.client.connect((pd_ip, pd_port))
+
+    # first appearance of the menu
+    self.printMenu()
+
 
   def buttonPressed(self, pin):
     """Callback function for the single push button"""
-    print("button pressed at pin " + str(pin))
+    print("button pressed")
+    if self.level > self.LEVEL_MIN:
+      self.level = self.level - 1
+      self.printMenu()
 
-  def rotaryChange(self, direction):
-    """Callback function for turning the rotary encoder
-    Args:
-        direction: 0 - clockwise, 1 - counterclockwise
-    """
-    print("turned: ", str(direction))
 
   def switchPressed(self, pin):
     """Callback function for pressing the internal button of the rotary encoder
@@ -84,7 +111,59 @@ class Menu:
         pin: BCM pin number of the button
     """
     print("rotary button pressed")
+    if self.level < self.LEVEL_MAX:
+      self.level = self.level + 1
+      self.printMenu()
 
+
+  def rotaryChange(self, direction):
+    """Callback function for turning the rotary encoder
+    Args:
+        direction: 1 - clockwise, -1 - counterclockwise
+    """
+    print("turned: ", str(direction))
+
+    # level 0 is metering -> do nothing
+    if self.level == 0:
+      return
+
+    if self.level == 1:
+      # choose effect
+      new_pos = self.pos[self.level] + direction
+      if new_pos >= 0 and new_pos <= len(self.fx) - 1:
+        self.pos[self.level] += direction
+        self.printMenu()
+    else:
+      # TODO: implement remaining levels
+      print("no further levels implemented!!!")
+
+
+  def printMenu(self):
+    # get current data first
+
+    print("DBG:", "lvl:", str(self.level))
+    print("DBG:", "pos:", repr(self.pos))
+
+    # metering
+    if self.level == 0:
+      self.display.message(self.display.LINE_1, "Menu lvl 0")
+      self.display.message(self.display.LINE_2, "Metering: TBA")
+    # effect selection
+    elif self.level == 1:
+      if self.pos[self.level] == len(self.pos) - 1: # last entry
+        self.display.message(self.display.LINE_1, "* " + self.fx[self.pos[self.level]].name)
+        self.display.message(self.display.LINE_2, "")
+      else:
+        self.display.message(self.display.LINE_1, "* " + self.fx[self.pos[self.level]].name)
+        self.display.message(self.display.LINE_2, self.fx[self.pos[self.level] + 1].name)
+    # parameter selection
+    elif self.level == 2:
+      self.display.message(self.display.LINE_1, "Menu lvl 2")
+      self.display.message(self.display.LINE_2, "")
+    # parameter adjustment
+    elif self.level == 3:
+      self.display.message(self.display.LINE_1, "Menu lvl 3")
+      self.display.message(self.display.LINE_2, "")
 
 
   def run(self):
@@ -92,11 +171,14 @@ class Menu:
     self.r_encoder.start()
     self.button.start()
     self.server.serve_forever()
+    self.client.connect((self.pd_ip, self.pd_port))
+
 
   def stop(self):
     self.r_encoder.stop()
     self.button.stop()
     GPIO.cleanup()
+
 
 if __name__ == "__main__":
   # OSC
