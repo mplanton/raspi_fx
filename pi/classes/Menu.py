@@ -48,6 +48,7 @@ class Menu:
   Manuel Planton 2019
   """
 
+  OSC_ADDRESS = "/menu"
   LEVEL_MIN = 0
   LEVEL_MAX = 3
   SUPERLINE = "#"*16
@@ -153,12 +154,14 @@ class Menu:
         self.fx_nr = new_fx_nr
         self.param_nr = 0
         self.printMenu()
+
     elif self.level == 2:
       # parameter selection
       new_param_nr = self.param_nr + direction
       if new_param_nr in range(0, len(self.fx[self.fx_nr].params)):
         self.param_nr = new_param_nr
         self.printMenu()
+
     elif self.level == 3:
       # parameter adjustment
       current_fx = self.fx[self.fx_nr]
@@ -169,6 +172,7 @@ class Menu:
         current_fx.params[key] = new_val
         self.setParameter()
         self.printMenu()
+
     else:
       print("ERROR: no such level!")
 
@@ -196,12 +200,13 @@ class Menu:
 
 
   def handleGetParameter(self, addr, tags, data, client_address):
-    print("DBG: OSC-msg:", str(data))
+    # saver, but more expensive -> search name of effect according to data
+    key = data[-2]
+    value = data[-1]
+    self.fx[self.fx_nr].params[key] = int(value)
 
 
   def printMenu(self):
-    # get current data first
-
     print("DBG:", "lvl:", str(self.level))
     print("DBG:", "fx_nr:", str(self.fx_nr))
     print("DBG:", "param_nr:", str(self.param_nr))
@@ -250,7 +255,7 @@ class Menu:
     print("DBG: connect OSC client to", self.pd_ip, "at port", str(self.pd_port))
     self.client.connect((self.pd_ip, self.pd_port))
 
-    self.server.addMsgHandler('/reverb/dry', self.handleGetParameter)
+    self.server.addMsgHandler('/menu', self.handleGetParameter)
 
     print("running...")
     self.server.serve_forever() # this should be the last command in run
@@ -284,6 +289,6 @@ if __name__ == "__main__":
   m = Menu(IP, PORT, IP, PD_PORT, D_RS, D_E, D_D4, D_D5, D_D6, D_D7, R_CLK, R_D, R_SW, B_PIN)
   m.run()
   print("running...")
-  sleep(20)
+  sleep(60)
   m.stop()
   print("program terminated")

@@ -42,6 +42,9 @@ if __name__ == "__main__":
     s.addMsgHandler('/reverb/liveness', handler)
     s.addMsgHandler('/reverb/fc', handler)
     s.addMsgHandler('/reverb/hf_damp', handler)
+    s.addMsgHandler('/menu', handler)
+
+
 
     print("OSC Server", ip, "at port", port)
     print("OSC Server listening...")

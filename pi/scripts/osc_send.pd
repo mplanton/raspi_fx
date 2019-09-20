@@ -1,4 +1,4 @@
-#N canvas 258 249 615 707 10;
+#N canvas 1289 293 615 707 10;
 #X text 19 10 start this patch in the shell like this:;
 #X text 18 29 pd acc-log_osc.pd -send "/num_of_files <number_of_log-files_in_dir>"
 ;
@@ -17,9 +17,9 @@ for "'space' \; ";
 #X floatatom 105 261 5 0 0 0 - - -;
 #X obj 158 416 oscformat rand;
 #X obj 99 526 print;
-#X msg 408 310 connect 169.254.203.219 7110;
 #X obj 99 494 oscparse;
 #X msg 414 330 connect 127.0.0.1 7110;
+#X msg 408 310 connect 169.254.203.219 7110;
 #X connect 2 0 3 0;
 #X connect 4 0 5 0;
 #X connect 5 0 2 0;
@@ -28,7 +28,7 @@ for "'space' \; ";
 #X connect 9 0 10 0;
 #X connect 9 0 11 0;
 #X connect 11 0 4 0;
-#X connect 11 0 14 0;
-#X connect 13 0 2 0;
-#X connect 14 0 12 0;
+#X connect 11 0 13 0;
+#X connect 13 0 12 0;
+#X connect 14 0 2 0;
 #X connect 15 0 2 0;

@@ -1,8 +1,6 @@
 TODO:
 =====
 
-- mit Pd getter messages beantworten -> OSC out im Pd-patch implementieren
-
 - Alle OSC Verbindungen für Hall checken
 
 - Rotary Encoder zu langsam und zu ungenau 
