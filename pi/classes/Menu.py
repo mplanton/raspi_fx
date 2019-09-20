@@ -81,6 +81,7 @@ class Menu:
     self.port = port
     self.pd_ip = pd_ip
     self.pd_port = pd_port
+    self.pd_is_connected = False
 
     # menu level entry state
     self.level = 1
@@ -129,6 +130,9 @@ class Menu:
         pin: BCM pin number of the button
     """
     print("DBG: rotary button pressed")
+    # try to connect to Pd if it has not been done successfully
+    if(self.pd_is_connected == False):
+      self.connectToPd()
     if self.level < self.LEVEL_MAX:
       self.level = self.level + 1
       # update all parameters of the effect
@@ -177,35 +181,6 @@ class Menu:
       print("ERROR: no such level!")
 
 
-  def setParameter(self):
-    msg = OSC3.OSCMessage()
-    keys = list(self.fx[self.fx_nr].params.keys()) # TODO: this should be more efficient and convenient
-    key = keys[self.param_nr]
-    msg.setAddress("/pd/" + self.fx[self.fx_nr].name + "/set/" + key)
-    msg.append(self.fx[self.fx_nr].params[key])
-    self.client.send(msg)
-
-
-  def getParameter(self, key):
-    msg = OSC3.OSCMessage()
-    msg.setAddress("/pd/" + self.fx[self.fx_nr].name + "/get/" + key)
-    msg.append("bang")
-    self.client.send(msg)
-
-
-  def updateParameters(self):
-    params = self.fx[self.fx_nr].params
-    for key in self.fx[self.fx_nr].params:
-      self.getParameter(key)
-
-
-  def handleGetParameter(self, addr, tags, data, client_address):
-    # saver, but more expensive -> search name of effect according to data
-    key = data[-2]
-    value = data[-1]
-    self.fx[self.fx_nr].params[key] = int(value)
-
-
   def printMenu(self):
     print("DBG:", "lvl:", str(self.level))
     print("DBG:", "fx_nr:", str(self.fx_nr))
@@ -249,17 +224,59 @@ class Menu:
       print("ERROR: no such menu level")
 
 
+  def setParameter(self):
+    msg = OSC3.OSCMessage()
+    keys = list(self.fx[self.fx_nr].params.keys()) # TODO: this should be more efficient and convenient
+    key = keys[self.param_nr]
+    msg.setAddress("/pd/" + self.fx[self.fx_nr].name + "/set/" + key)
+    msg.append(self.fx[self.fx_nr].params[key])
+    self.client.send(msg)
+
+
+  def getParameter(self, key):
+    msg = OSC3.OSCMessage()
+    msg.setAddress("/pd/" + self.fx[self.fx_nr].name + "/get/" + key)
+    msg.append("bang")
+    self.client.send(msg)
+
+
+  def updateParameters(self):
+    params = self.fx[self.fx_nr].params
+    for key in self.fx[self.fx_nr].params:
+      self.getParameter(key)
+
+
+  def connectToPd(self):
+    # it is possible to tell Pd the ip and the port to connect to
+    print("DBG: Try to let Pd connect to menu's server")
+    self.oscSend("/pd/connect", "bang")
+
+
+  def handleGetParameter(self, addr, tags, data, client_address):
+    # Messages to menu should be exclusively from Pd or to what it should be connected
+    if self.pd_is_connected == False:
+      self.pd_is_connected = True
+    # safer, but more expensive -> search name of effect according to data
+    key = data[-2]
+    value = data[-1]
+    self.fx[self.fx_nr].params[key] = int(value)
+
+
+  def oscSend(self, address, data):
+    msg = OSC3.OSCMessage()
+    msg.setAddress(address)
+    msg.append(data)
+    self.client.send(msg)
+
+
   def run(self):
     self.r_encoder.start()
     self.button.start()
-    print("DBG: connect OSC client to", self.pd_ip, "at port", str(self.pd_port))
+    print("connect menu OSC client to", self.pd_ip, "at port", str(self.pd_port))
     self.client.connect((self.pd_ip, self.pd_port))
-
     self.server.addMsgHandler('/menu', self.handleGetParameter)
-
     print("running...")
-    self.server.serve_forever() # this should be the last command in run
-
+    self.server.serve_forever()
 
   def stop(self):
     self.r_encoder.stop()
@@ -287,8 +304,6 @@ if __name__ == "__main__":
   B_PIN = 5
 
   m = Menu(IP, PORT, IP, PD_PORT, D_RS, D_E, D_D4, D_D5, D_D6, D_D7, R_CLK, R_D, R_SW, B_PIN)
-  m.run()
-  print("running...")
-  sleep(60)
+  m.run() # runs forever...
   m.stop()
   print("program terminated")

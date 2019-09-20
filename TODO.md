@@ -3,9 +3,9 @@ TODO:
 
 - Effekte implementieren
 
-- auto connect OSC server: Menü und Pd
-
 - Presets für Effekte implementieren
+
+- on/off für effekte implementieren mit [switch~] um cpu zu sparen
 
 - Rotary Encoder zu langsam und zu ungenau 
   -> HW-Debounce mit Kondensator? Und auch für Taster?
