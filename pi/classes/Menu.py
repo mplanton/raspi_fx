@@ -181,14 +181,14 @@ class Menu:
     msg = OSC3.OSCMessage()
     keys = list(self.fx[self.fx_nr].params.keys()) # TODO: this should be more efficient and convenient
     key = keys[self.param_nr]
-    msg.setAddress("/" + self.fx[self.fx_nr].name + "/set/" + key)
+    msg.setAddress("/pd/" + self.fx[self.fx_nr].name + "/set/" + key)
     msg.append(self.fx[self.fx_nr].params[key])
     self.client.send(msg)
 
 
   def getParameter(self, key):
     msg = OSC3.OSCMessage()
-    msg.setAddress("/" + self.fx[self.fx_nr].name + "/get/" + key)
+    msg.setAddress("/pd/" + self.fx[self.fx_nr].name + "/get/" + key)
     msg.append("bang")
     self.client.send(msg)
 

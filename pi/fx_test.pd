@@ -1,8 +1,8 @@
-#N canvas 353 315 566 740 10;
+#N canvas 860 215 566 740 10;
 #X obj 12 8 loadbang;
-#X obj 223 140 netreceive -u -b 7110;
-#X obj 223 166 oscparse;
-#X obj 223 192 list trim;
+#X obj 223 120 netreceive -u -b 7110;
+#X obj 223 146 oscparse;
+#X obj 223 172 list trim;
 #N canvas 49 541 788 513 effects 1;
 #X obj 269 458 dac~;
 #X obj 260 422 *~;
@@ -27,7 +27,7 @@
 #X obj 631 131 route in_vol out_vol;
 #X obj 260 134 *~ 1;
 #X obj 281 47 vsl 15 80 0.0001 1 1 0 empty empty vol 0 -9 0 10 -262144
--1 -1 7729 1;
+-1 -1 7605 1;
 #X obj 260 158 s~ sig_in;
 #X obj 11 205 r~ sig_in;
 #X obj 603 314 s osc_out;
@@ -86,12 +86,13 @@
 #X obj 121 506 oscformat menu;
 #X obj 314 225 print osc_in;
 #X obj 62 616 print osc_out;
+#X obj 338 275 route connect;
+#X obj 223 196 route pd;
 #X connect 0 0 5 0;
 #X connect 0 0 8 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
-#X connect 3 0 4 0;
-#X connect 3 0 18 0;
+#X connect 3 0 21 0;
 #X connect 6 0 4 0;
 #X connect 7 0 17 0;
 #X connect 8 0 4 0;
@@ -104,3 +105,6 @@
 #X connect 16 0 10 0;
 #X connect 17 0 12 0;
 #X connect 17 0 14 0;
+#X connect 21 0 18 0;
+#X connect 21 0 20 0;
+#X connect 21 0 4 0;
