@@ -7,15 +7,21 @@ import Button
 
 class Effect:
   """class to represent effects in the menu"""
-  def __init__(self, name, parameters):
+  def __init__(self, name, params):
     """Constructor
     Args:
         name: name of the effect
-        parameters: a dictionary of parameter value pairs of the effect
+        params: a dictionary of parameter value pairs of the effect
+
+    Constants:
+        MIN_VAL: minimum value of parameter range
+        MAX_VAL: maximum value of parameter range
     """
+    self.MIN_VAL = 0
+    self.MAX_VAL = 127
     self.on = 0
     self.name = name
-    self.params = parameters
+    self.params = params
 
 class Menu:
   """Menu class for managing a multi effects patch in Pd on Raspberry Pi.
@@ -70,22 +76,30 @@ class Menu:
         button: push button pin number
     """
 
-    self.level = 1 # menu level entry state
-    self.pos = [0]*(self.LEVEL_MAX + 1) # positions in the menu at every menu level
+    # state variables
+    # menu level entry state
+    self.level = 1
+    # current effect
+    self.fx_nr = 0
+    # current parameter of the effect
+    self.param_nr = 0
 
     # define effects
-    reverb = Effect("Reverb", {'dry' : 0.5, 'wet' : 0.9, 'rev_in_lvl' : 90,
-                               'liveness' : 90, 'fc' : 3000, 'hf_damp' : 20})
-    delay = Effect("Delay", {'dry' : 0.5, 'wet' : 1, 'feedback' : 0.6})
-    lop = Effect("Tiefpass", {'fc' : 1000})
-    hip = Effect("Hochpass", {'fc' : 400})
+    reverb = Effect(name = "Reverb", params = {'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
+                                               'liveness' : 80, 'fc' : 40, 'hf_damp' : 7})
+    delay = Effect("Delay", {'dry' : 64, 'wet' : 127, 'feedback' : 100})
+    lop = Effect("Tiefpass", {'fc' : 64})
+    hip = Effect("Hochpass", {'fc' : 30})
+
+    # effects list
     self.fx = [reverb, delay, lop, hip]
     # TODO: append more fx later
 
     GPIO.setmode(GPIO.BCM)
 
     self.button = Button.Button(button, "falling", self.buttonPressed)
-    # callbacks for encoder must be defined first
+
+    # callbacks for encoder and OSC handlers must be defined
     self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, self.rotaryChange, self.switchPressed)
     print("initialize display")
     self.display = hd44780.HD44780(d_rs, d_e, d_d4, d_d5, d_d6, d_d7)
@@ -100,7 +114,7 @@ class Menu:
 
   def buttonPressed(self, pin):
     """Callback function for the single push button"""
-    print("button pressed")
+    print("DBG: button pressed")
     if self.level > self.LEVEL_MIN:
       self.level = self.level - 1
       self.printMenu()
@@ -111,7 +125,7 @@ class Menu:
     Args:
         pin: BCM pin number of the button
     """
-    print("rotary button pressed")
+    print("DBG: rotary button pressed")
     if self.level < self.LEVEL_MAX:
       self.level = self.level + 1
       self.printMenu()
@@ -122,34 +136,44 @@ class Menu:
     Args:
         direction: 1 - clockwise, -1 - counterclockwise
     """
-    print("turned: ", str(direction))
+    print("DBG: turned: ", str(direction))
 
     # level 0 is metering -> do nothing
-    if self.level == 0:
+    if self.level <= 0:
       return
 
     if self.level == 1:
       # effect selection
-      new_pos = self.pos[self.level] + direction
-      if new_pos >= 0 and new_pos <= len(self.fx) - 1:
-        self.pos[self.level] += direction
+      new_fx_nr = self.fx_nr + direction
+      if new_fx_nr in range(0, len(self.fx)):
+        self.fx_nr = new_fx_nr
+        self.param_nr = 0
         self.printMenu()
     elif self.level == 2:
       # parameter selection
-      new_pos = self.pos[self.level] + direction
-      if new_pos >= 0 and new_pos <= len(self.fx[self.pos[1]].params) - 1: # levels are hard coded...
-        self.pos[self.level] += direction
+      new_param_nr = self.param_nr + direction
+      if new_param_nr in range(0, len(self.fx[self.fx_nr].params)):
+        self.param_nr = new_param_nr
+        self.printMenu()
+    elif self.level == 3:
+      # parameter adjustment
+      current_fx = self.fx[self.fx_nr]
+      keys = list(current_fx.params.keys())
+      key = keys[self.param_nr]
+      new_val = current_fx.params[key] + direction
+      if new_val in range(current_fx.MIN_VAL, current_fx.MAX_VAL+1):
+        current_fx.params[key] = new_val
         self.printMenu()
     else:
-      # TODO: implement remaining levels
-      print("no further levels implemented!!!")
+      print("ERROR: no such level!")
 
 
   def printMenu(self):
     # get current data first
 
     print("DBG:", "lvl:", str(self.level))
-    print("DBG:", "pos:", repr(self.pos))
+    print("DBG:", "fx_nr:", str(self.fx_nr))
+    print("DBG:", "param_nr:", str(self.param_nr))
 
     # metering
     if self.level == 0:
@@ -158,36 +182,35 @@ class Menu:
 
     # effect selection
     elif self.level == 1:
-      if self.pos[self.level] == len(self.pos) - 1: # last entry
-        self.display.message(self.display.LINE_1, "*" + self.fx[self.pos[self.level]].name)
+      if self.fx_nr == len(self.fx) - 1: # last entry
+        self.display.message(self.display.LINE_1, "*" + self.fx[self.fx_nr].name)
         self.display.message(self.display.LINE_2, self.SUPERLINE)
       else:
-        self.display.message(self.display.LINE_1, "*" + self.fx[self.pos[self.level]].name)
-        self.display.message(self.display.LINE_2, self.fx[self.pos[self.level] + 1].name)
+        self.display.message(self.display.LINE_1, "*" + self.fx[self.fx_nr].name)
+        self.display.message(self.display.LINE_2, " " + self.fx[self.fx_nr + 1].name)
 
-    # parameter selection
-    elif self.level == 2:
-      fx_lvl = self.pos[1] # menu levels are currently hard coded...
-      param_lvl = self.pos[self.level]
-      params = self.fx[fx_lvl].params
+    # parameter selection and adjustment
+    elif self.level == 2 or self.level == 3:
+      params = self.fx[self.fx_nr].params
       keys = list(params.keys())
-      key1 = keys[param_lvl]
+      key1 = keys[self.param_nr]
+
+      if self.level == 2:
+        crsr = "*"
+      else:
+        crsr = ">"
 
       # last entry
-      if param_lvl == len(self.fx[fx_lvl].params) - 1:
-        self.display.message(self.display.LINE_1, "*" + key1 + ": " + str(params[key1]))
+      if self.param_nr == len(params) - 1:
+        self.display.message(self.display.LINE_1, crsr + key1 + ": " + str(params[key1]))
         self.display.message(self.display.LINE_2, self.SUPERLINE)
-
-      # and the lines between
       else:
-        key2 = keys[param_lvl + 1]
-        self.display.message(self.display.LINE_1, "*" + key1 + ": " + str(params[key1]))
-        self.display.message(self.display.LINE_2, key2 + ": " + str(params[key2]))
+        key2 = keys[self.param_nr + 1]
+        self.display.message(self.display.LINE_1, crsr + key1 + ": " + str(params[key1]))
+        self.display.message(self.display.LINE_2, " " + key2 + ": " + str(params[key2]))
 
-    # parameter adjustment
-    elif self.level == 3:
-      self.display.message(self.display.LINE_1, "Menu lvl 3")
-      self.display.message(self.display.LINE_2, self.SUPERLINE)
+    else:
+      print("ERROR: no such menu level")
 
 
   def run(self):
