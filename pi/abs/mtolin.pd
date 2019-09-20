@@ -1,0 +1,24 @@
+#N canvas 937 380 484 300 10;
+#X text 132 10 mtolin <start_val> <stop_val>;
+#X obj 9 9 inlet midi_val;
+#X obj 9 265 outlet rescaled_val;
+#X text 132 24 mtolin rescales midi values from 0-127 linearly from
+a starting value to a stop value;
+#X obj 9 41 / 127;
+#X obj 9 179 *;
+#X obj 9 215 + \$1;
+#X obj 74 129 f \$1;
+#X obj 42 129 f \$2;
+#X obj 42 153 -;
+#X obj 42 74 loadbang;
+#X obj 42 97 t b b;
+#X connect 1 0 4 0;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 2 0;
+#X connect 7 0 9 1;
+#X connect 8 0 9 0;
+#X connect 9 0 5 1;
+#X connect 10 0 11 0;
+#X connect 11 0 8 0;
+#X connect 11 1 7 0;

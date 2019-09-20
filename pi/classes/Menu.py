@@ -89,18 +89,16 @@ class Menu:
     self.param_nr = 0
 
     # define effects
+    main = Effect(name = "main", params = {'in_vol' : 127, 'out_vol' : 127})
     reverb = Effect(name = "reverb", params = {'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
                                                'liveness' : 80, 'fc' : 40, 'hf_damp' : 7})
     delay = Effect("delay", {'dry' : 64, 'wet' : 127, 'feedback' : 100})
     lop = Effect("lop", {'fc' : 64})
     hip = Effect("hip", {'fc' : 30})
-
     # effects list
-    self.fx = [reverb, delay, lop, hip]
-    # TODO: append more fx later
+    self.fx = [main, reverb, delay, lop, hip]
 
     GPIO.setmode(GPIO.BCM)
-
     self.button = Button.Button(button, "falling", self.buttonPressed)
 
     # callbacks for encoder and OSC handlers must be defined
@@ -132,6 +130,8 @@ class Menu:
     print("DBG: rotary button pressed")
     if self.level < self.LEVEL_MAX:
       self.level = self.level + 1
+      # update all parameters of the effect
+      self.updateParameters()
       self.printMenu()
 
 
@@ -180,6 +180,24 @@ class Menu:
     msg.setAddress("/" + self.fx[self.fx_nr].name + "/set/" + key)
     msg.append(self.fx[self.fx_nr].params[key])
     self.client.send(msg)
+
+
+  def getParameter(self, key):
+    msg = OSC3.OSCMessage()
+    msg.setAddress("/" + self.fx[self.fx_nr].name + "/get/" + key)
+    msg.append("bang")
+    self.client.send(msg)
+
+
+  def updateParameters(self):
+    params = self.fx[self.fx_nr].params
+    for key in self.fx[self.fx_nr].params:
+      self.getParameter(key)
+
+
+  def handleGetParameter(self, addr, tags, data, client_address):
+    print("DBG: OSC-msg:", str(data))
+
 
   def printMenu(self):
     # get current data first
@@ -231,6 +249,9 @@ class Menu:
     self.button.start()
     print("DBG: connect OSC client to", self.pd_ip, "at port", str(self.pd_port))
     self.client.connect((self.pd_ip, self.pd_port))
+
+    self.server.addMsgHandler('/reverb/dry', self.handleGetParameter)
+
     print("running...")
     self.server.serve_forever() # this should be the last command in run
 

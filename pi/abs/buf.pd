@@ -1,0 +1,19 @@
+#N canvas 948 288 479 256 10;
+#X obj 45 96 f;
+#X obj 18 69 t b b;
+#X obj 18 151 pack s f;
+#X obj 17 10 inlet set;
+#X obj 111 11 inlet get;
+#X obj 18 124 symbol \$1;
+#X text 193 10 buf <name>;
+#X text 110 47 buf is a buffer to store numbers of the set inlet and
+outputs the name number pair later with an input of the get input.
+;
+#X obj 18 208 outlet name_value;
+#X connect 0 0 2 1;
+#X connect 1 0 5 0;
+#X connect 1 1 0 0;
+#X connect 2 0 8 0;
+#X connect 3 0 0 1;
+#X connect 4 0 1 0;
+#X connect 5 0 2 0;
