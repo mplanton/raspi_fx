@@ -76,7 +76,11 @@ class Menu:
         button: push button pin number
     """
 
-    # state variables
+    self.ip = ip
+    self.port = port
+    self.pd_ip = pd_ip
+    self.pd_port = pd_port
+
     # menu level entry state
     self.level = 1
     # current effect
@@ -85,11 +89,11 @@ class Menu:
     self.param_nr = 0
 
     # define effects
-    reverb = Effect(name = "Reverb", params = {'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
+    reverb = Effect(name = "reverb", params = {'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
                                                'liveness' : 80, 'fc' : 40, 'hf_damp' : 7})
-    delay = Effect("Delay", {'dry' : 64, 'wet' : 127, 'feedback' : 100})
-    lop = Effect("Tiefpass", {'fc' : 64})
-    hip = Effect("Hochpass", {'fc' : 30})
+    delay = Effect("delay", {'dry' : 64, 'wet' : 127, 'feedback' : 100})
+    lop = Effect("lop", {'fc' : 64})
+    hip = Effect("hip", {'fc' : 30})
 
     # effects list
     self.fx = [reverb, delay, lop, hip]
@@ -101,11 +105,11 @@ class Menu:
 
     # callbacks for encoder and OSC handlers must be defined
     self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, self.rotaryChange, self.switchPressed)
-    print("initialize display")
+    print("DBG: initialize display")
     self.display = hd44780.HD44780(d_rs, d_e, d_d4, d_d5, d_d6, d_d7)
-    print("initialize OSC Server")
+    print("DBG: initialize OSC Server")
     self.server = OSC3.OSCServer((ip, port))
-    print("initialize OSC Client")
+    print("DBG: initialize OSC Client")
     self.client = OSC3.OSCClient()
 
     # first appearance of the menu
@@ -163,10 +167,19 @@ class Menu:
       new_val = current_fx.params[key] + direction
       if new_val in range(current_fx.MIN_VAL, current_fx.MAX_VAL+1):
         current_fx.params[key] = new_val
+        self.setParameter()
         self.printMenu()
     else:
       print("ERROR: no such level!")
 
+
+  def setParameter(self):
+    msg = OSC3.OSCMessage()
+    keys = list(self.fx[self.fx_nr].params.keys()) # TODO: this should be more efficient and convenient
+    key = keys[self.param_nr]
+    msg.setAddress("/" + self.fx[self.fx_nr].name + "/set/" + key)
+    msg.append(self.fx[self.fx_nr].params[key])
+    self.client.send(msg)
 
   def printMenu(self):
     # get current data first
@@ -214,11 +227,12 @@ class Menu:
 
 
   def run(self):
-    print("running...")
     self.r_encoder.start()
     self.button.start()
-    self.server.serve_forever()
+    print("DBG: connect OSC client to", self.pd_ip, "at port", str(self.pd_port))
     self.client.connect((self.pd_ip, self.pd_port))
+    print("running...")
+    self.server.serve_forever() # this should be the last command in run
 
 
   def stop(self):

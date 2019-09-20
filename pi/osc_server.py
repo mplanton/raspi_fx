@@ -36,6 +36,13 @@ if __name__ == "__main__":
     s.addMsgHandler('/rotary/encoder', handler)
     s.addMsgHandler('/rotary/switch', handler)
     s.addMsgHandler('/rand', handler)
+    s.addMsgHandler('/reverb/dry', handler)
+    s.addMsgHandler('/reverb/wet', handler)
+    s.addMsgHandler('/reverb/rev_in_lvl', handler)
+    s.addMsgHandler('/reverb/liveness', handler)
+    s.addMsgHandler('/reverb/fc', handler)
+    s.addMsgHandler('/reverb/hf_damp', handler)
 
+    print("OSC Server", ip, "at port", port)
     print("OSC Server listening...")
     s.serve_forever()
