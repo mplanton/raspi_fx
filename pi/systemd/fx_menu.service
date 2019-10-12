@@ -1,0 +1,10 @@
+[Unit]
+Description=Menu for pure data audio effects service pd_fx.service. Handles Hardware I/O and talks to Pd via OSC.
+Requires=pd_fx.service
+After=pd_fx.service
+
+[Service]
+ExecStart=python3 /home/pi/classes/Menu.py
+
+[Install]
+WantedBy=multi-user.target

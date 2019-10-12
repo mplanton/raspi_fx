@@ -1,0 +1,9 @@
+[Unit]
+Description=Multi audio effects processing in pd for OSC control.
+
+[Service]
+ExecStart=pd -nogui -alsa -audiodev 3 /home/pi/fx.pd
+
+[Install]
+WantedBy=multi-user.target
+

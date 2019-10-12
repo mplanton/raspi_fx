@@ -11,7 +11,7 @@ EBU R128 Meter (by Robin Gareus)
 
 Für RPi FX:
 
-- Gutes Delay mit Chorus, Vibrato, pitch shift, usw.
+- Gutes Delay mit Chorus, Vibrato, pitch shift, usw. -> evtl wie Valhalla Delay anfangen
 
 - Physical Modeling Plate Reverb mit Waveguide Platte von Ritsch
 
