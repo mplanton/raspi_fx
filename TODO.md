@@ -1,7 +1,8 @@
 TODO:
 =====
 
-- Parameter einstellung mit veränderbaren Inkrementen bei weiterem Tastendruck auf rotary encoder
+- Reverb Parameter einstellen:
+* rev_in_lvl reagiert erst ganz am Schluss
 
 - on/off für effekte implementieren mit [switch~] um cpu zu sparen
 

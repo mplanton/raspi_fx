@@ -22,6 +22,8 @@ class Effect:
     self.on = 0
     self.name = name
     self.params = params
+    # TODO: implement presets -> store and load params from disk
+
 
 class Menu:
   """Menu class for managing a multi effects patch in Pd on Raspberry Pi.
@@ -83,6 +85,8 @@ class Menu:
     self.pd_port = pd_port
     self.pd_is_connected = False
 
+    self.rotary_increment = 1
+
     # menu level entry state
     self.level = 1
     # current effect
@@ -138,6 +142,16 @@ class Menu:
       # update all parameters of the effect
       self.updateParameters()
       self.printMenu()
+    elif self.level == self.LEVEL_MAX:
+      # change rotary encoder increment if switch pressed on parameter adjustment level
+      if self.rotary_increment == 1:
+        self.rotary_increment = 5
+      elif self.rotary_increment == 5:
+        self.rotary_increment = 10
+      elif self.rotary_increment == 10:
+        self.rotary_increment = 25
+      elif self.rotary_increment == 25:
+        self.rotary_increment = 1
 
 
   def rotaryChange(self, direction):
@@ -171,11 +185,16 @@ class Menu:
       current_fx = self.fx[self.fx_nr]
       keys = list(current_fx.params.keys())
       key = keys[self.param_nr]
-      new_val = current_fx.params[key] + direction
-      if new_val in range(current_fx.MIN_VAL, current_fx.MAX_VAL+1):
-        current_fx.params[key] = new_val
-        self.setParameter()
-        self.printMenu()
+      new_val = current_fx.params[key] + (direction * self.rotary_increment)
+
+      if new_val < current_fx.MIN_VAL:
+        new_val = current_fx.MIN_VAL
+      elif new_val > current_fx.MAX_VAL:
+        new_val = current_fx.MAX_VAL
+
+      current_fx.params[key] = new_val
+      self.setParameter()
+      self.printMenu()
 
     else:
       print("ERROR: no such level!")
