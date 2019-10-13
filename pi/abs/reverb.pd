@@ -1,4 +1,4 @@
-#N canvas 879 215 906 784 10;
+#N canvas 821 215 1014 784 10;
 #X floatatom 304 406 0 0 120 3 level_db - -;
 #X floatatom 320 354 0 0 100 3 liveness - -;
 #X floatatom 397 397 4 0 5000 3 crossover_f - -;
@@ -6,10 +6,10 @@
 #X obj 322 541 rev3~ 100 90 3000 20;
 #X obj 17 649 *~;
 #X obj 34 560 vsl 15 80 0.0001 1 1 0 empty empty dry 0 -9 0 10 -262144
--1 -1 7364 1;
+-1 -1 7312 1;
 #X obj 204 661 *~;
 #X obj 174 521 vsl 15 80 0.0001 1 1 0 empty empty wet 0 -9 0 10 -262144
--1 -1 7777 1;
+-1 -1 7900 1;
 #X text 649 531 TODO: soft clipping intern im rev3;
 #X text 653 550 TODO: Predelay?;
 #X obj 12 12 inlet~ sig;
@@ -37,6 +37,8 @@
 #X obj 552 78 route dry wet rev_in_lvl liveness fc hf_damp;
 #X obj 701 372 list prepend reverb;
 #X obj 701 398 s osc_out;
+#X obj 906 33 switch~;
+#X obj 906 10 r reverb/switch;
 #X connect 0 0 4 2;
 #X connect 1 0 4 3;
 #X connect 2 0 4 4;
@@ -91,3 +93,4 @@
 #X connect 32 4 30 0;
 #X connect 32 5 31 0;
 #X connect 33 0 34 0;
+#X connect 36 0 35 0;
