@@ -1,7 +1,7 @@
 from time import sleep
 import RPi.GPIO as GPIO
 from pyOSC3 import OSC3
-import hd44780
+from RPLCD import CharLCD
 import KY040
 import Button
 
@@ -112,7 +112,8 @@ class Menu:
     # callbacks for encoder and OSC handlers must be defined
     self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, self.rotaryChange, self.switchPressed)
     print("DBG: initialize display")
-    self.display = hd44780.HD44780(d_rs, d_e, d_d4, d_d5, d_d6, d_d7)
+    self.lcd = CharLCD(numbering_mode=GPIO.BCM, cols=16, rows=2, pin_rs=d_rs, pin_e=d_e,
+                       pins_data=[d_d4, d_d5, d_d6, d_d7])
     print("DBG: initialize OSC Server")
     self.server = OSC3.OSCServer((ip, port))
     print("DBG: initialize OSC Client")
@@ -209,17 +210,25 @@ class Menu:
 
     # metering
     if self.level == 0:
-      self.display.message(self.display.LINE_1, "Menu lvl 0")
-      self.display.message(self.display.LINE_2, "Metering: TBA")
+      self.lcd.clear()
+      self.lcd.cursor_pos = (0,0)
+      self.lcd.write_string("Menu lvl 0")
+      self.lcd.cursor_pos = (1,0)
+      self.lcd.write_string("Metering: TBA")
 
     # effect selection
     elif self.level == 1:
+      self.lcd.clear()
       if self.fx_nr == len(self.fx) - 1: # last entry
-        self.display.message(self.display.LINE_1, "*" + self.fx[self.fx_nr].name)
-        self.display.message(self.display.LINE_2, self.SUPERLINE)
+        self.lcd.cursor_pos = (0,0)
+        self.lcd.write_string("*" + self.fx[self.fx_nr].name)
+        self.lcd.cursor_pos = (1,0)
+        self.lcd.write_string(self.SUPERLINE)
       else:
-        self.display.message(self.display.LINE_1, "*" + self.fx[self.fx_nr].name)
-        self.display.message(self.display.LINE_2, " " + self.fx[self.fx_nr + 1].name)
+        self.lcd.cursor_pos = (0,0)
+        self.lcd.write_string("*" + self.fx[self.fx_nr].name)
+        self.lcd.cursor_pos = (1,0)
+        self.lcd.write_string(" " + self.fx[self.fx_nr + 1].name)
 
     # parameter selection and adjustment
     elif self.level == 2 or self.level == 3:
@@ -232,14 +241,20 @@ class Menu:
       else:
         crsr = ">"
 
+      self.lcd.clear()
+
       # last entry
       if self.param_nr == len(params) - 1:
-        self.display.message(self.display.LINE_1, crsr + key1 + ": " + str(params[key1]))
-        self.display.message(self.display.LINE_2, self.SUPERLINE)
+        self.lcd.cursor_pos = (0,0)
+        self.lcd.write_string(crsr + key1 + ": " + str(params[key1]))
+        self.lcd.cursor_pos = (1,0)
+        self.lcd.write_string(self.SUPERLINE)
       else:
         key2 = keys[self.param_nr + 1]
-        self.display.message(self.display.LINE_1, crsr + key1 + ": " + str(params[key1]))
-        self.display.message(self.display.LINE_2, " " + key2 + ": " + str(params[key2]))
+        self.lcd.cursor_pos = (0,0)
+        self.lcd.write_string(crsr + key1 + ": " + str(params[key1]))
+        self.lcd.cursor_pos = (1,0)
+        self.lcd.write_string(" " + key2 + ": " + str(params[key2]))
 
     else:
       print("ERROR: no such menu level")
