@@ -1,9 +1,12 @@
 TODO:
 =====
 
-- on/off für effekte implementieren mit [switch~] um cpu zu sparen
+- bypass der effekte implementieren
+
+- Reihenfolge der Effekte bestimmen (was seriell/parallel?)
 
 - Presets für Effekte implementieren
+  * Effektparameter speichern/laden -> main ist individuell eingestellt
 
 - Menü Level 0: Metering implementieren
 

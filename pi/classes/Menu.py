@@ -19,7 +19,6 @@ class Effect:
     """
     self.MIN_VAL = 0
     self.MAX_VAL = 127
-    self.on = 0
     self.name = name
     self.params = params
     # TODO: implement presets -> store and load params from disk
@@ -95,13 +94,13 @@ class Menu:
     self.param_nr = 0
 
     # define effects
-    main = Effect(name = "main", params = {'in_vol' : 127, 'out_vol' : 127})
-    reverb = Effect(name = "reverb", params = {'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
+    main = Effect(name = "main", params = {'on' : 1, 'in_vol' : 127, 'out_vol' : 127})
+    reverb = Effect(name = "reverb", params = {'on' : 0, 'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
                                                'liveness' : 80, 'fc' : 40, 'hf_damp' : 7})
-    delay = Effect("delay", {'dry' : 64, 'wet' : 127, 'delay_time' : 64, 'feedback' : 100,
+    delay = Effect("delay", {'on' : 0, 'dry' : 64, 'wet' : 127, 'delay_time' : 64, 'feedback' : 100,
                              'fc_lop' : 120, 'fc_hip' : 25, 'detune' : 10, 'mod_freq' : 5})
-    lop = Effect("lop", {'fc' : 64})
-    hip = Effect("hip", {'fc' : 30})
+    lop = Effect("lop", {'on' : 0, 'fc' : 64})
+    hip = Effect("hip", {'on' : 0, 'fc' : 30})
     # effects list
     self.fx = [main, reverb, delay, lop, hip]
 
@@ -194,7 +193,12 @@ class Menu:
       elif new_val > current_fx.MAX_VAL:
         new_val = current_fx.MAX_VAL
 
-      current_fx.params[key] = new_val
+      # on is handled differently
+      if key == 'on':
+        current_fx.params[key] = int(not current_fx.params[key])
+      else:
+        current_fx.params[key] = new_val
+
       self.setParameter()
       self.printMenu()
 
@@ -219,15 +223,18 @@ class Menu:
     elif self.level == 1:
       self.lcd.clear()
       if self.fx_nr == len(self.fx) - 1: # last entry
+        on = self.fx[self.fx_nr].params['on']
         self.lcd.cursor_pos = (0,0)
-        self.lcd.write_string("*" + self.fx[self.fx_nr].name)
+        self.lcd.write_string("*" + self.fx[self.fx_nr].name + " " + str(on))
         self.lcd.cursor_pos = (1,0)
         self.lcd.write_string(self.SUPERLINE)
       else:
         self.lcd.cursor_pos = (0,0)
-        self.lcd.write_string("*" + self.fx[self.fx_nr].name)
+        on_1 = self.fx[self.fx_nr].params['on']
+        self.lcd.write_string("*" + self.fx[self.fx_nr].name + " " + str(on_1))
         self.lcd.cursor_pos = (1,0)
-        self.lcd.write_string(" " + self.fx[self.fx_nr + 1].name)
+        on_2 = self.fx[self.fx_nr + 1].params['on']
+        self.lcd.write_string(" " + self.fx[self.fx_nr + 1].name + " " + str(on_2))
 
     # parameter selection and adjustment
     elif self.level == 2 or self.level == 3:
