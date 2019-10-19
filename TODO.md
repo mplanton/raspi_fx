@@ -3,14 +3,7 @@ TODO:
 
 - on/off für effekte implementieren mit [switch~] um cpu zu sparen
 
-- überflüssige in und out gains von delay und reverb entfernen
-
 - Presets für Effekte implementieren
-
-- Taster besser entprellen (zählt oft 2 mal) -> hw?
-
-- Rotary Encoder zu langsam und zu ungenau 
-  -> HW-Debounce mit Kondensator? Und auch für Taster?
 
 - Menü Level 0: Metering implementieren
 
@@ -36,4 +29,36 @@ TODO:
   * Stereo Delay
   * Granular Delay/Hall/sonstige Effekte
 
-- Bug: Manchmal wird nach einer Zeit nur mehr Blödsinn am LCD angezeigt.
+- Debug messages entfernen (weniger augaben -> bessere performance)
+
+- Bug: Display zeigt selten Müll an, wenn rotary encoder gedreht wird
+DBG: param_nr: 0
+DBG: turned:  1
+DBG: lvl: 1
+DBG: fx_nr: 3
+DBG: param_nr: 0
+DBG: turned:  1
+DBG: lvl: 1
+DBG: fx_nr: 4
+DBG: param_nr: 0
+DBG: turned:  1
+DBG: turned:  1
+DBG: turned:  -1
+DBG: lvl: 1
+DBG: fx_nr: 3
+DBG: param_nr: 0
+DBG: turned:  1
+DBG: lvl: 1
+DBG: fx_nr: 4
+DBG: param_nr: 0
+DBG: turned:  1
+Traceback (most recent call last):
+  File "/home/pi/classes/KY040.py", line 45, in _clockCallback
+    self.rotaryCallback(self.ANTICLOCKWISE)
+  File "/home/pi/classes/Menu.py", line 176, in rotaryChange
+DBG: turned:  1
+    self.printMenu()
+  File "/home/pi/classes/Menu.py", line 230, in printMenu
+    self.lcd.write_string(" " + self.fx[self.fx_nr + 1].name)
+IndexError: list index out of range
+

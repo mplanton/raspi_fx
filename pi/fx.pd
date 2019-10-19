@@ -1,4 +1,4 @@
-#N canvas 1157 210 566 740 10;
+#N canvas 1128 210 566 740 10;
 #X obj 12 8 loadbang;
 #X obj 223 120 netreceive -u -b 7110;
 #X obj 223 146 oscparse;

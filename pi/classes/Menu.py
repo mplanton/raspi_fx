@@ -99,8 +99,7 @@ class Menu:
     reverb = Effect(name = "reverb", params = {'dry' : 64, 'wet' : 120, 'rev_in_lvl' : 100,
                                                'liveness' : 80, 'fc' : 40, 'hf_damp' : 7})
     delay = Effect("delay", {'dry' : 64, 'wet' : 127, 'delay_time' : 64, 'feedback' : 100,
-                             'fc_lop' : 120, 'fc_hip' : 25, 'detune' : 10, 'mod_freq' : 5,
-                             'in_vol' : 127, 'out_vol' : 127})
+                             'fc_lop' : 120, 'fc_hip' : 25, 'detune' : 10, 'mod_freq' : 5})
     lop = Effect("lop", {'fc' : 64})
     hip = Effect("hip", {'fc' : 30})
     # effects list
