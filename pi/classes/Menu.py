@@ -54,7 +54,7 @@ class Menu:
   LEVEL_MAX = 3
   SUPERLINE = "#"*16
 
-  def __init__(self, ip, port, pd_ip, pd_port, d_rs, d_e, d_d4, d_d5, d_d6, d_d7, r_clk, r_d, r_sw, button):
+  def __init__(self, ip, port, pd_ip, pd_port, d_rs, d_rw, d_e, d_d4, d_d5, d_d6, d_d7, r_clk, r_d, r_sw, button):
     """Constructor
     IP addresses and port numbers for OSC connection are needed.
     Prefix 'd' is for HD44780 compatible display connections connected to the pins of the RPi.
@@ -67,6 +67,7 @@ class Menu:
         pd_ip: IP Address of  the OSC server of the Pd effects patch
         pd_port: port number of the OSC server of the Pd effects patch
         d_rs: HD44780 register select pin number
+        d_rw: HD44780 read/write pin number
         d_e: HD44780 enable pin number
         d_d4: HD44780 data channel 4 pin number
         d_d5: HD44780 data channel 5 pin number
@@ -110,8 +111,9 @@ class Menu:
     # callbacks for encoder and OSC handlers must be defined
     self.r_encoder = KY040.KY040(r_clk, r_d, r_sw, self.rotaryChange, self.switchPressed)
     print("DBG: initialize display")
-    self.lcd = CharLCD(numbering_mode=GPIO.BCM, cols=16, rows=2, pin_rs=d_rs, pin_e=d_e,
-                       pins_data=[d_d4, d_d5, d_d6, d_d7])
+    # Compat mode is true because slow displays show garbage sometimes.
+    self.lcd = CharLCD(numbering_mode=GPIO.BCM, cols=16, rows=2, pin_rs=d_rs, pin_rw=d_rw, pin_e=d_e,
+                       pins_data=[d_d4, d_d5, d_d6, d_d7], compat_mode = True)
     print("DBG: initialize OSC Server")
     self.server = OSC3.OSCServer((ip, port))
     print("DBG: initialize OSC Client")
@@ -332,7 +334,9 @@ if __name__ == "__main__":
   PORT = 7111
   PD_PORT = 7110
   # display
+  # use BCM pin numbers
   D_RS = 4
+  D_RW = 25
   D_E = 17
   D_D4 = 18
   D_D5 = 22
@@ -345,7 +349,7 @@ if __name__ == "__main__":
   # push button
   B_PIN = 5
 
-  m = Menu(IP, PORT, IP, PD_PORT, D_RS, D_E, D_D4, D_D5, D_D6, D_D7, R_CLK, R_D, R_SW, B_PIN)
+  m = Menu(IP, PORT, IP, PD_PORT, D_RS, D_RW, D_E, D_D4, D_D5, D_D6, D_D7, R_CLK, R_D, R_SW, B_PIN)
   m.run() # runs forever...
   m.stop()
   print("program terminated")

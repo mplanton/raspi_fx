@@ -5,7 +5,16 @@ TODO:
 
 - Reihenfolge der Effekte bestimmen (was seriell/parallel?)
 
+- Parameter der Effekte vom Menü aus vom Pd Patch aktualisieren (zeigt in manchen Situationen falsche Werte an, wenn noch nichts verstellt wurde. Z.B. wenn das Menü nachträglich neu gestartet wird und der Pd Patch durch läuft)
+
+- Effekt Klasse in eigene Datei. Aus Menu Klasse entfernen
+
 - Presets für Effekte implementieren
+  * neuen Branch für dieses Feature
+  * Neue Struktur des Menüs erstellen -> Verzweigungen möglich
+    - bis jetzt gibt es nur linear Level
+    - Jede Menü Ebene ist ein Objekt/Klasse
+    - Baumstruktur von Objekten
   * Effektparameter speichern/laden -> main ist individuell eingestellt
 
 - Menü Level 0: Metering implementieren
@@ -65,3 +74,4 @@ DBG: turned:  1
     self.lcd.write_string(" " + self.fx[self.fx_nr + 1].name)
 IndexError: list index out of range
 
+-> Lösung in LCD Klasse -> compat_mode = True
