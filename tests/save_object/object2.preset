@@ -1,0 +1,66 @@
+preset test72
+{
+  "cat": 2,
+  "dog": 7,
+  "horse": 972
+}
+preset test21
+{
+  "cat": 3,
+  "dog": 5,
+  "horse": 741
+}
+preset test29
+{
+  "cat": 3,
+  "dog": 12,
+  "horse": 957
+}
+preset test95
+{
+  "cat": 5,
+  "dog": 20,
+  "horse": 380
+}
+preset test63
+{
+  "cat": 5,
+  "dog": 15,
+  "horse": 718
+}
+preset test30
+{
+  "cat": 3,
+  "dog": 12,
+  "horse": 943
+}
+preset test50
+{
+  "cat": 4,
+  "dog": 4,
+  "horse": 940
+}
+preset test45
+{
+  "cat": 5,
+  "dog": 19,
+  "horse": 428
+}
+preset test19
+{
+  "cat": 3,
+  "dog": 8,
+  "horse": 391
+}
+preset test10
+{
+  "cat": 5,
+  "dog": 13,
+  "horse": 402
+}
+preset test88
+{
+  "cat": 5,
+  "dog": 18,
+  "horse": 760
+}

@@ -1,0 +1,57 @@
+[
+  [
+    "object1",
+    "preset 0",
+    {
+      "cat": 4,
+      "dog": 16,
+      "horse": 275
+    }
+  ],
+  [
+    "object2",
+    "preset 1",
+    {
+      "cat": 5,
+      "dog": 17,
+      "horse": 119
+    }
+  ],
+  [
+    "another object",
+    "preset 2",
+    {
+      "cat": 5,
+      "dog": 11,
+      "horse": 887
+    }
+  ]
+][
+  [
+    "object1",
+    "preset 0",
+    {
+      "cat": 2,
+      "dog": 11,
+      "horse": 939
+    }
+  ],
+  [
+    "object2",
+    "preset 1",
+    {
+      "cat": 2,
+      "dog": 1,
+      "horse": 127
+    }
+  ],
+  [
+    "another object",
+    "preset 2",
+    {
+      "cat": 3,
+      "dog": 9,
+      "horse": 17
+    }
+  ]
+]

@@ -1,0 +1,51 @@
+#N canvas 588 153 760 619 10;
+#X obj 62 279 phasor~;
+#X obj 64 148 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X obj 64 171 metro 350;
+#X obj 64 194 random 30;
+#X obj 64 217 + 20;
+#X obj 64 240 mtof;
+#X obj 84 551 dac~;
+#X obj 97 517 *~;
+#X obj 151 416 vsl 15 80 0.0001 1 1 0 empty empty vol 0 -9 0 10 -262144
+-1 -1 0 1;
+#X text 218 8 benötigt iemlib;
+#X obj 164 31 vsl 15 128 30 18000 1 0 empty empty fc 0 -9 0 10 -262144
+-1 -1 0 1;
+#X floatatom 196 323 5 0 0 3 q - -, f 5;
+#X obj 348 119 hsl 128 15 10 5000 1 0 empty empty lfo_fc_int -2 -8
+0 10 -262144 -1 -1 0 1;
+#X obj 262 56 hsl 128 15 0.01 10 1 0 empty empty lfo_freq -2 -8 0 10
+-262144 -1 -1 0 1;
+#X obj 145 236 +;
+#X obj 313 134 *;
+#X floatatom 313 171 5 0 0 0 - - -, f 5;
+#X floatatom 148 267 5 0 0 0 - - -, f 5;
+#X obj 148 193 t b f;
+#X obj 94 323 clip 10 20000;
+#X obj 57 351 lp2~ 1000 0.707 200;
+#X text 232 324 logarithmisch zwischen 0-127;
+#X obj 259 78 abs/lfo 0.4 50;
+#X connect 0 0 20 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 0;
+#X connect 5 0 0 0;
+#X connect 7 0 6 1;
+#X connect 7 0 6 0;
+#X connect 8 0 7 1;
+#X connect 10 0 18 0;
+#X connect 11 0 20 2;
+#X connect 12 0 15 1;
+#X connect 13 0 22 0;
+#X connect 14 0 17 0;
+#X connect 14 0 19 0;
+#X connect 15 0 16 0;
+#X connect 15 0 14 0;
+#X connect 18 0 14 0;
+#X connect 18 1 14 1;
+#X connect 19 0 20 1;
+#X connect 20 0 7 0;
+#X connect 22 2 15 0;

@@ -1,6 +1,8 @@
 TODO:
 =====
 
+- LCD im 8bit-Modus ausprobieren -> garbage-Bugfix?
+
 - bypass der effekte implementieren
 
 - Reihenfolge der Effekte bestimmen (was seriell/parallel?)

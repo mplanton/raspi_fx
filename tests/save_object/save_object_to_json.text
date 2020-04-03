@@ -1,0 +1,9 @@
+class Foo(object):
+    def __init__(self):
+        self.x = 1
+        self.y = 2
+
+foo = Foo()
+s = json.dumps(foo) # raises TypeError with "is not JSON serializable"
+
+s = json.dumps(foo.__dict__) # s set to: {"x":1, "y":2}
